@@ -38,7 +38,6 @@
     "url": "git+https://github.com/light-tower-team/monads.git"
   },
   "scripts": {
-    "postinstall": "yarn lefthook install",
     "dev": "vite",
     "auto-fix": "yarn lefthook run auto-fix",
     "test": "vitest",
