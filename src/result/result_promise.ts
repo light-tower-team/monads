@@ -1,5 +1,11 @@
 import { Err, Ok, Result } from "./result";
 
+export type MaybeResultPromise<
+  TValue,
+  TError,
+  TPayload extends TValue | Result<TValue, TError> = Result<TValue, TError>,
+> = ResultPromise<TValue, TError, TPayload> | Result<TValue, TError>;
+
 export class ResultPromise<
   TValue = never,
   TError = never,
