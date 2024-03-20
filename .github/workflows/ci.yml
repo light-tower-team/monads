@@ -37,7 +37,7 @@ jobs:
       - name: Build
         run: pnpm build
       - name: Format and Lint
-        run: pnpm fmt
+        run: pnpm lint:check && pnpm fmt:check
       - name: Test and Coverage
         run: pnpm test:run:cov
   publish:
