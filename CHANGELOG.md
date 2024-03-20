@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/light-tower-team/monads/compare/v1.0.0...v1.0.1) (2024-03-20)
+
+
+### Bug Fixes
+
+* **build:** improve package building ([b5c1e76](https://github.com/light-tower-team/monads/commit/b5c1e76864f51494452cf79851c0075cecd41e68))
+
 # 1.0.0 (2024-03-20)
 
 
