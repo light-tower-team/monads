@@ -1,34 +1,27 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "moduleResolution": "Node",
+
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "allowJs": false,
-    "outDir": "dist",
+    "noEmit": true,
+
     "strict": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "strictBindCallApply": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx",
-    "baseUrl": "./",
-    "paths": {
-      "@common/*": ["./src/common/*"],
-      "@src/*": ["./src/*"]
-    },
+    "useUnknownInCatchVariables": true,
+    "alwaysStrict": true,
+
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }

@@ -1,17 +1,17 @@
 pre-push:
   parallel: true
   commands:
-    frontend-type-check:
-      tags: frontend type check
+    type-check:
+      tags: type check
       glob: "*.{ts,tsx}"
-      run: npx tsc --incremental --noEmit
-    frontend-eslint:
-      tags: frontend style
+      run: npx tsc --noEmit
+    lint:
+      tags: code-style
       files: git diff --name-only --diff-filter=d origin/master...HEAD
       glob: "*.{ts,tsx}"
       run: npx  eslint --report-unused-disable-directives --max-warnings 0 {files}
-    frontend-prettier:
-      tags: frontend style
+    format:
+      tags: code-style
       files: git diff --name-only --diff-filter=d origin/master...HEAD
       glob: "*.{ts,tsx}"
       run: npx prettier --check {files}
@@ -19,8 +19,8 @@ pre-push:
 auto-fix:
   parallel: true
   commands:
-    frontend-style:
-      tags: frontend style
+    code-style:
+      tags: code-style
       files: git diff --name-only --diff-filter=d origin/master...HEAD
       glob: "*.{ts,tsx}"
       run: npx eslint --fix {files} && npx prettier --write --list-different {files}

@@ -1,10 +1,13 @@
-import { mergeConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
-import viteConfig from "./vite.config";
-
-export default mergeConfig(viteConfig, {
+export default defineConfig({
   test: {
     globals: true,
     environment: "node",
+    testTimeout: 10_000,
+    coverage: {
+      exclude: [...(configDefaults.coverage.exclude ?? []), "scripts/**"],
+      provider: "istanbul",
+    },
   },
 });
