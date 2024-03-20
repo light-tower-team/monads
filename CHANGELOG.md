@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/light-tower-team/monads/compare/v1.0.1...v1.0.2) (2024-03-20)
+
+
+### Bug Fixes
+
+* **result:** improve types result value checking ([facad72](https://github.com/light-tower-team/monads/commit/facad728f305a7e5f606959fb011a9df09f850f1))
+
 ## [1.0.1](https://github.com/light-tower-team/monads/compare/v1.0.0...v1.0.1) (2024-03-20)
 
 
