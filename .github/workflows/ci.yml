@@ -67,6 +67,8 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
         run: pnpm audit signatures
       - name: Release
