@@ -1,9 +1,5 @@
-import { ResultKind, ResultKindType } from "./constants";
 import { ResultUnwrappingError } from "./errors";
 import { ResultPromise } from "./result_promise";
-
-type OkLike<TValue> = { kind: typeof ResultKind.Ok; value: TValue };
-type ErrLike<TError> = { kind: typeof ResultKind.Err; value: TError };
 
 type AnyResult = Result<any, any> | ResultPromise<any, any>;
 
@@ -28,62 +24,27 @@ type SyncOrAsyncResult<TResults extends AnyResult[]> =
     ? ResultPromise<InferResultDeps<TResults>[0], InferResultDeps<TResults>[1]>
     : Result<InferResultDeps<TResults>[0], InferResultDeps<TResults>[1]>;
 
-export class Result<TValue = never, TError = never> {
+const enum ResultType {
+  OK = "ok",
+  ERR = "err",
+}
+
+class AbstractResult<TType extends ResultType, TValue, TError> {
   public get [Symbol.toStringTag](): string {
     return "Result";
   }
 
-  private constructor(
-    public readonly kind: ResultKindType,
-    public readonly value: TValue | TError,
+  public constructor(
+    private readonly type: TType,
+    public readonly value: TType extends ResultType.OK ? TValue : TError,
   ) {}
 
-  public isOk(): this is OkLike<TValue> {
-    return this.kind === ResultKind.Ok;
+  public isOk(): this is AbstractResult<ResultType.OK, TValue, TError> {
+    return this.type === ResultType.OK;
   }
 
-  public isError(): this is ErrLike<TError> {
-    return this.kind === ResultKind.Err;
-  }
-
-  public static Ok<TValue = never, TError = never>(value: TValue): Result<TValue, TError> {
-    return new Result<TValue, TError>(ResultKind.Ok, value);
-  }
-
-  public static Err<TValue = never, TError = never>(value: TError): Result<TValue, TError> {
-    return new Result<TValue, TError>(ResultKind.Err, value);
-  }
-
-  public static of<TValue = never, TError = never>(value: TValue): Result<TValue, TError> {
-    return Ok<TValue, TError>(value);
-  }
-
-  public static from<TValue = never, TError = never>(value: TValue): Result<TValue, TError> {
-    return Ok<TValue, TError>(value);
-  }
-
-  public static fromPromise<TValue = never, TError = never>(promise: Promise<TValue>): ResultPromise<TValue, TError> {
-    return ResultPromise.from<TValue, TError>(promise);
-  }
-
-  public static fromTry<TValue = never, TError = never, TArgs extends unknown[] = []>(
-    fn: (...args: TArgs) => TValue,
-    ...args: TArgs
-  ): Result<TValue, TError> {
-    try {
-      return Ok<TValue, TError>(fn(...args));
-    } catch (error) {
-      return Err<TValue, TError>(error as TError);
-    }
-  }
-
-  public static merge<TResults extends AnyResult[]>(results: [...TResults]): SyncOrAsyncResult<TResults> {
-    const res = results.reduce(
-      (res, result) => res.chain((res) => result.map((value) => res.concat([value])) as Result<unknown[], unknown>),
-      Ok<unknown[], unknown>([]),
-    );
-
-    return res as SyncOrAsyncResult<TResults>;
+  public isErr(): this is AbstractResult<ResultType.ERR, TValue, TError> {
+    return this.type === ResultType.ERR;
   }
 
   public map<TNextValue = never>(fn: (value: TValue) => TNextValue): Result<TNextValue, TError> {
@@ -99,7 +60,7 @@ export class Result<TValue = never, TError = never> {
   }
 
   public mapErr<TNextError = never>(fn: (value: TError) => TNextError): Result<TValue, TNextError> {
-    if (this.isError()) {
+    if (this.isErr()) {
       return Err<TValue, TNextError>(fn(this.value));
     }
 
@@ -141,7 +102,7 @@ export class Result<TValue = never, TError = never> {
   }
 
   public unwrap(): TValue {
-    if (this.isError()) {
+    if (this.isErr()) {
       throw new ResultUnwrappingError(this.value);
     }
 
@@ -153,7 +114,7 @@ export class Result<TValue = never, TError = never> {
   }
 
   public unwrapOrElse(fn: (value: TError) => TValue): TValue {
-    return this.isError() ? fn(this.value) : (this.value as TValue);
+    return this.isErr() ? fn(this.value) : (this.value as TValue);
   }
 
   public join<TNextValue, TNextError, TNextError2>(
@@ -182,4 +143,48 @@ export class Result<TValue = never, TError = never> {
   }
 }
 
-export const { Ok, Err, merge, of, from, fromTry, fromPromise } = Result;
+export type Result<TValue = never, TError = never> =
+  | AbstractResult<ResultType.OK, TValue, TError>
+  | AbstractResult<ResultType.ERR, TValue, TError>;
+
+export function Ok<TValue = never, TError = never>(value: TValue): Result<TValue, TError> {
+  return new AbstractResult<ResultType.OK, TValue, TError>(ResultType.OK, value);
+}
+
+export function Err<TValue = never, TError = never>(error: TError): Result<TValue, TError> {
+  return new AbstractResult<ResultType.ERR, TValue, TError>(ResultType.ERR, error);
+}
+
+export function of<TValue = never, TError = never>(value: TValue): Result<TValue, TError> {
+  return Ok<TValue, TError>(value);
+}
+
+export function from<TValue = never, TError = never>(value: TValue): Result<TValue, TError> {
+  return Ok<TValue, TError>(value);
+}
+
+export function fromPromise<TValue = never, TError = never>(promise: Promise<TValue>): ResultPromise<TValue, TError> {
+  return ResultPromise.from<TValue, TError>(promise);
+}
+
+export function fromTry<TValue = never, TError = never, TArgs extends unknown[] = []>(
+  fn: (...args: TArgs) => TValue,
+  ...args: TArgs
+): Result<TValue, TError> {
+  try {
+    return Ok<TValue, TError>(fn(...args));
+  } catch (error) {
+    return Err<TValue, TError>(error as TError);
+  }
+}
+
+export function merge<TResults extends AnyResult[]>(results: [...TResults]): SyncOrAsyncResult<TResults> {
+  const res = results.reduce(
+    (res, result) => res.chain((res) => result.map((value) => res.concat([value])) as Result<unknown[], unknown>),
+    Ok<unknown[], unknown>([]),
+  );
+
+  return res as SyncOrAsyncResult<TResults>;
+}
+
+export const Result = { Ok, Err, of, from, fromPromise, fromTry, merge };

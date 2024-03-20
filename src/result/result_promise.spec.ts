@@ -14,7 +14,7 @@ describe("result with promise", () => {
     const error = new Error("test");
     const result = await Result.fromPromise(Promise.reject(error));
 
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(error);
   });
 
@@ -44,7 +44,7 @@ describe("result with promise", () => {
 
       expect(add10).toBeCalledTimes(0);
 
-      expect(result.isError()).toBeTruthy();
+      expect(result.isErr()).toBeTruthy();
       expect(result.value).toEqual(error);
     },
   );
@@ -55,7 +55,7 @@ describe("result with promise", () => {
 
     const result = await Result.fromPromise(Promise.reject(error)).mapErr(() => error2);
 
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(error2);
   });
 
@@ -106,7 +106,7 @@ describe("result with promise", () => {
 
     expect(add10).not.toBeCalled();
 
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(error);
   });
 
@@ -129,7 +129,7 @@ describe("result with promise", () => {
       Result.Err(lastError),
     ]);
 
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(firstError);
   });
 
@@ -257,5 +257,11 @@ describe("result with promise", () => {
 
     expect(result.isOk()).toBeTruthy();
     expect(result.value).toEqual([value, value2]);
+  });
+
+  it("should display a string tag", () => {
+    const result = Result.fromPromise<number, Error>(Promise.resolve(58));
+
+    expect(`${result}`).toEqual("[object ResultPromise]");
   });
 });

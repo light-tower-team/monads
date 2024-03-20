@@ -9,7 +9,7 @@ describe("result", () => {
       const result = Result[op](value);
 
       expect(result.isOk()).toBeTruthy();
-      expect(result.isError()).toBeFalsy();
+      expect(result.isErr()).toBeFalsy();
       expect(result.value).toEqual(value);
     },
   );
@@ -19,7 +19,7 @@ describe("result", () => {
     const result = Result.Err(error);
 
     expect(result.isOk()).toBeFalsy();
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(error);
   });
 
@@ -37,7 +37,7 @@ describe("result", () => {
       throw error;
     });
 
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(error);
   });
 
@@ -67,7 +67,7 @@ describe("result", () => {
 
       expect(add10).not.toBeCalled();
 
-      expect(result.isError()).toBeTruthy();
+      expect(result.isErr()).toBeTruthy();
       expect(result.value).toEqual(error);
     },
   );
@@ -78,7 +78,7 @@ describe("result", () => {
 
     const result = Result.Err(error).mapErr(() => error2);
 
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(error2);
   });
 
@@ -88,7 +88,7 @@ describe("result", () => {
 
     const result = Result.of(value).mapErr(() => error);
 
-    expect(result.isError()).toBeFalsy();
+    expect(result.isErr()).toBeFalsy();
     expect(result.value).toEqual(value);
   });
 
@@ -118,7 +118,7 @@ describe("result", () => {
 
     expect(add10).not.toBeCalled();
 
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(error);
   });
 
@@ -141,7 +141,7 @@ describe("result", () => {
       Result.Err(lastError),
     ]);
 
-    expect(result.isError()).toBeTruthy();
+    expect(result.isErr()).toBeTruthy();
     expect(result.value).toEqual(firstError);
   });
 
@@ -262,5 +262,11 @@ describe("result", () => {
 
     expect(result.isOk()).toBeTruthy();
     expect(result.value).toEqual([value, value2]);
+  });
+
+  it("should display a string tag", () => {
+    const result = Result.Ok(5);
+
+    expect(`${result}`).toEqual("[object Result]");
   });
 });

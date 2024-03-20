@@ -24,7 +24,7 @@ export class ResultPromise<
   }
 
   public then<TNextValue = TValue, TNextError = TError, TResult2 = never>(
-    onfulfilled?:
+    onfulfilled:
       | ((
           value: TPayload,
         ) =>
@@ -34,7 +34,7 @@ export class ResultPromise<
       | null,
     onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
   ): ResultPromise<TNextValue, TNextError> {
-    const promise = this.externalPromise.then((value) => (onfulfilled ? onfulfilled(value) : value), onrejected);
+    const promise = this.externalPromise.then(onfulfilled, onrejected);
 
     return new ResultPromise<TNextValue, TNextError>(promise as Promise<Result<TNextValue, TNextError>>);
   }
