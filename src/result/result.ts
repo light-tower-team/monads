@@ -20,17 +20,13 @@ type InferResultDeps<TResults extends AnyResult[]> = [
   }[number],
 ];
 
-type HasResultPromise<TResults extends AnyResult[]> = ResultPromise<
-  never,
-  never,
-  never
-> extends TResults[keyof TResults]
-  ? true
-  : false;
+type HasResultPromise<TResults extends AnyResult[]> =
+  ResultPromise<never, never, never> extends TResults[keyof TResults] ? true : false;
 
-type SyncOrAsyncResult<TResults extends AnyResult[]> = HasResultPromise<TResults> extends true
-  ? ResultPromise<InferResultDeps<TResults>[0], InferResultDeps<TResults>[1]>
-  : Result<InferResultDeps<TResults>[0], InferResultDeps<TResults>[1]>;
+type SyncOrAsyncResult<TResults extends AnyResult[]> =
+  HasResultPromise<TResults> extends true
+    ? ResultPromise<InferResultDeps<TResults>[0], InferResultDeps<TResults>[1]>
+    : Result<InferResultDeps<TResults>[0], InferResultDeps<TResults>[1]>;
 
 export class Result<TValue = never, TError = never> {
   public get [Symbol.toStringTag](): string {
