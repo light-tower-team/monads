@@ -1,6 +1,6 @@
 {
   "name": "@light-tower-team/monads",
-  "version": "0.0.1-alpha2",
+  "version": "1.0.0",
   "type": "module",
   "files": [
     "dist"
